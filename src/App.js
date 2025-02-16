@@ -49,11 +49,12 @@ const getDesignTokens = (mode) => ({
   palette: {
     mode,
     primary: {
-      main: mode === 'light' ? '#4f1ea8' : '#8FD8F9',
+      main: mode === 'light' ? '#FFC100' : '#FF0000',
     },
     background: {
-      default: mode === 'light' ? '#F8F9FA' : '#121212',
-      paper: mode === 'light' ? '#FFFFFF' : '#1E1E1E',
+      default: mode === 'light' ? '#FFF5D6' : '#0A0903',
+      paper: mode === 'light' ? '#FFFAEB' : '#1E1E1E',
+      
     },
   },
   typography: {
@@ -72,26 +73,35 @@ const mockAssets = [
     id: 1,
     title: 'Asset #1',
     price: 2.5,
-    image: 'https://i.imgur.com/gtoOpmS.jpeg',
-    description: 'Funny image',
-    category: 'Art'
+    image: 'https://i.imgur.com/Vtj1Ssu.png',
+    description: 'Hot Wheels',
+    category: 'Collectibles'
   },
   {
     id: 2,
     title: 'Asset #2',
-    price: 3.8,
-    image: 'https://i.imgur.com/VMk5K4t.jpeg',
-    description: 'Lil nas X',
+    price: 55,
+    image: 'https://i.imgur.com/NsPkKnM.png',
+    description: 'Steam gift card',
     category: 'Collectibles'
   },
   {
     id: 3,
     title: 'Asset #3',
-    price: 0.727,
+    price: 72727,
     image: 'https://www.supercars.net/blog/wp-content/uploads/2020/10/2007-Koenigsegg-CCGT-001-1600-1-770x1020.jpg',
-    description: 'A nice car',
+    description: 'Nice car',
     category: 'Collectibles'
   },
+  {
+    id: 4,
+    title: 'Asset #4',
+    price: 727,
+    image: 'https://i.imgur.com/FjD6iqc.png',
+    description: 'Russian revolver',
+    category: 'Art'
+  },
+
 ];
 
 const mockTransactions = [
@@ -107,8 +117,8 @@ const mockTransactions = [
 const AppBarComponent = ({ mode, toggleTheme, handleLoginOpen }) => (
   <AppBar position="static" color="primary">
     <Toolbar>
-      <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        CoinKard
+      <Typography variant="h5" sx={{ flexGrow: 1, letterSpacing: 3, color:'offwhite', fontWeight: 'bold', textShadow: '2'}}>
+        Memetonize
       </Typography>
       <Button color="inherit" component={Link} to="/">Browse</Button>
       <Button color="inherit" component={Link} to="/history">History</Button>
@@ -123,7 +133,7 @@ const AppBarComponent = ({ mode, toggleTheme, handleLoginOpen }) => (
 );
 
 const AssetCard = ({ asset }) => (
-  <Card sx={{ height: 600, display: 'flex', flexDirection: 'column' }}>
+  <Card sx={{ height: 600, display: 'flex', flexDirection: 'column', boxShadow: 10}}>
     <CardMedia
       component="img"
       height="400"
@@ -137,7 +147,7 @@ const AssetCard = ({ asset }) => (
         {asset.description}
       </Typography>
       <Typography variant="h6" color="primary">
-        {asset.price} ETH
+        {asset.price}$
       </Typography>
     </CardContent>
     <Button variant="contained" sx={{ m: 2 }}>Initiate Trade</Button>
