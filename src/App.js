@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -17,155 +17,166 @@ import {
   CssBaseline,
   ThemeProvider,
   createTheme,
-} from "@mui/material";
-import { Search, Brightness4, Brightness7 } from "@mui/icons-material";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper
+} from '@mui/material';
+import { 
+  Search, 
+  Brightness4, 
+  Brightness7, 
+  AccountCircle 
+} from '@mui/icons-material';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 // ====================
 // 1. THEME CONFIGURATION
 // ====================
 /**
- * Creates a theme with light/dark mode support.
- * @param {string} mode - "light" or "dark"
- * @returns {object} - Material UI theme object
+ * Customizable theme settings
+ * @param {string} mode - 'light' or 'dark'
+ * @returns {object} Theme configuration object
  */
 const getDesignTokens = (mode) => ({
   palette: {
     mode,
     primary: {
-      main: mode === "light" ? "#2E3B4E" : "#8BDBF9", // Primary brand color
-    },
-    secondary: {
-      main: mode === "light" ? "#FF6B6B" : "#FFA07A", // Accent color
+      main: mode === 'light' ? '#4f1ea8' : '#8FD8F9',
     },
     background: {
-      default: mode === "light" ? "#F5F7FA" : "#121212", // Page background
-      paper: mode === "light" ? "#FFFFFF" : "#1E1E1E", // Card background
+      default: mode === 'light' ? '#F8F9FA' : '#121212',
+      paper: mode === 'light' ? '#FFFFFF' : '#1E1E1E',
     },
   },
   typography: {
-    fontFamily: "'Inter', sans-serif", // Custom font
-    h6: {
-      fontWeight: 600, // Bold headings
-    },
+    fontFamily: "'Poppins', sans-serif",
+    h6: { fontWeight: 600 },
+    button: { textTransform: 'none' }
   },
+  shape: { borderRadius: 12 },
 });
 
 // ====================
-// 2. ASSET DATA (Mock Database)
+// 2. MOCK DATA (Replace with actual API calls)
 // ====================
-/**
- * Mock data for digital assets.
- * Replace this with actual API calls or database integration.
- * Each asset has:
- * - id: Unique identifier
- * - title: Name of the asset
- * - price: Price in ETH
- * - image: URL of the asset image
- * - description: Short description of the asset
- */
-const assetData = [
+const mockAssets = [
   {
     id: 1,
-    title: "CryptoPunk #1234",
+    title: 'Asset #1',
     price: 2.5,
-    image: "https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v-aI8din7WPk0Pgo3qQFhAUH-B6i-dCqqc_mCkRIzULmwzwecnohLhrcH8A9mpWIZqA7ygc52Sr81hE?auto=format&w=384",
-    description: "Rare alien punk from the CryptoPunks collection.",
+    image: 'https://i.imgur.com/gtoOpmS.jpeg',
+    description: 'Funny image',
+    category: 'Art'
   },
   {
     id: 2,
-    title: "Bored Ape #5678",
+    title: 'Asset #2',
     price: 3.8,
-    image: "https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGHoJBzDB?auto=format&w=384",
-    description: "Gold fur ape from the Bored Ape Yacht Club.",
+    image: 'https://i.imgur.com/VMk5K4t.jpeg',
+    description: 'Lil nas X',
+    category: 'Collectibles'
   },
-  // Add more assets here
+  {
+    id: 3,
+    title: 'Asset #3',
+    price: 0.727,
+    image: 'https://www.supercars.net/blog/wp-content/uploads/2020/10/2007-Koenigsegg-CCGT-001-1600-1-770x1020.jpg',
+    description: 'A nice car',
+    category: 'Collectibles'
+  },
+];
+
+const mockTransactions = [
+  { id: 1, asset: 'Asset #1', date: '2024-02-14', status: 'Completed' },
+  { id: 2, asset: 'Asset #2', date: '2023-08-16', status: 'Pending' },
+  { id: 3, asset: 'Asset #3', date: '2023-08-16', status: 'Pending' },
 ];
 
 // ====================
 // 3. COMPONENTS
 // ====================
 
-/**
- * AppBar Component
- * Contains the navigation and theme toggle.
- */
-const AppBarComponent = ({ mode, toggleTheme }) => (
+const AppBarComponent = ({ mode, toggleTheme, handleLoginOpen }) => (
   <AppBar position="static" color="primary">
     <Toolbar>
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
         CoinKard
       </Typography>
-      <Button color="inherit" component={Link} to="/">
-        Browse Assets
-      </Button>
-      <Button color="inherit" component={Link} to="/history">
-        Transaction History
-      </Button>
+      <Button color="inherit" component={Link} to="/">Browse</Button>
+      <Button color="inherit" component={Link} to="/history">History</Button>
       <IconButton color="inherit" onClick={toggleTheme}>
-        {mode === "light" ? <Brightness4 /> : <Brightness7 />}
+        {mode === 'light' ? <Brightness4 /> : <Brightness7 />}
+      </IconButton>
+      <IconButton color="inherit" onClick={handleLoginOpen}>
+        <AccountCircle />
       </IconButton>
     </Toolbar>
   </AppBar>
 );
 
-/**
- * AssetCard Component
- * Displays a single asset in a vertical card layout.
- */
 const AssetCard = ({ asset }) => (
-  <Card sx={{ height: 400, display: "flex", flexDirection: "column" }}>
+  <Card sx={{ height: 600, display: 'flex', flexDirection: 'column' }}>
     <CardMedia
       component="img"
-      height="200"
+      height="400"
       image={asset.image}
       alt={asset.title}
-      sx={{ objectFit: "cover" }}
+      sx={{ objectFit: 'cover' }}
     />
     <CardContent sx={{ flexGrow: 1 }}>
-      <Typography gutterBottom variant="h6">
-        {asset.title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography gutterBottom variant="h6">{asset.title}</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
         {asset.description}
       </Typography>
-      <Typography variant="h6" sx={{ mt: 2 }}>
+      <Typography variant="h6" color="primary">
         {asset.price} ETH
       </Typography>
     </CardContent>
-    <Button size="small" sx={{ m: 2, alignSelf: "flex-start" }}>
-      Trade
-    </Button>
+    <Button variant="contained" sx={{ m: 2 }}>Initiate Trade</Button>
   </Card>
 );
 
-/**
- * AssetMarketplace Component
- * Displays a grid of asset cards with search and filter functionality.
- */
-const AssetMarketplace = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
+const AssetMarketplace = ({ assets }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  const filteredAssets = assets.filter(asset => 
+    asset.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (categoryFilter === 'all' || asset.category === categoryFilter)
+  );
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <TextField
-        placeholder="Search assets..."
-        variant="outlined"
-        size="small"
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
-        sx={{ mb: 3 }}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+    <Container sx={{ py: 4 }}>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 32 }}>
+        <TextField
+          placeholder="Search assets..."
+          variant="outlined"
+          size="small"
+          InputProps={{ startAdornment: <Search sx={{ mr: 1 }} /> }}
+          sx={{ flex: 1 }}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          size="small"
+        >
+          <MenuItem value="all">All Categories</MenuItem>
+          <MenuItem value="Art">Art</MenuItem>
+          <MenuItem value="Collectibles">Collectibles</MenuItem>
+        </Select>
+      </div>
+
       <Grid container spacing={3}>
-        {assetData.map((asset) => (
+        {filteredAssets.map(asset => (
           <Grid item xs={12} sm={6} md={4} key={asset.id}>
             <AssetCard asset={asset} />
           </Grid>
@@ -175,41 +186,102 @@ const AssetMarketplace = () => {
   );
 };
 
-/**
- * TransactionHistory Component
- * Displays a table of past transactions.
- */
-const TransactionHistory = () => (
-  <Container sx={{ mt: 4 }}>
-    <Typography variant="h4" gutterBottom>
-      Transaction History
-    </Typography>
-    <Typography variant="body1">
-      (Transaction history will be displayed here)
-    </Typography>
+const TransactionHistory = ({ transactions }) => (
+  <Container sx={{ py: 4 }}>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Asset</TableCell>
+            <TableCell>Date</TableCell>
+            <TableCell>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {transactions.map(tx => (
+            <TableRow key={tx.id}>
+              <TableCell>{tx.asset}</TableCell>
+              <TableCell>{tx.date}</TableCell>
+              <TableCell>{tx.status}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   </Container>
 );
+
+const AuthDialog = ({ open, onClose }) => {
+  const [isLogin, setIsLogin] = useState(true);
+
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>{isLogin ? 'Login' : 'Sign Up'}</DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Email"
+          type="email"
+          fullWidth
+          variant="standard"
+        />
+        <TextField
+          margin="dense"
+          label="Password"
+          type="password"
+          fullWidth
+          variant="standard"
+        />
+        {!isLogin && (
+          <TextField
+            margin="dense"
+            label="Confirm Password"
+            type="password"
+            fullWidth
+            variant="standard"
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setIsLogin(!isLogin)}>
+          {isLogin ? 'Create account' : 'Existing user? Login'}
+        </Button>
+        <Button variant="contained" onClick={onClose}>
+          {isLogin ? 'Login' : 'Sign Up'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 // ====================
 // 4. MAIN APP COMPONENT
 // ====================
 const App = () => {
-  const [mode, setMode] = useState("light");
+  const [mode, setMode] = useState('light');
+  const [authOpen, setAuthOpen] = useState(false);
   const theme = createTheme(getDesignTokens(mode));
-
-  const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-  };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AppBarComponent mode={mode} toggleTheme={toggleTheme} />
+        <AppBarComponent 
+          mode={mode} 
+          toggleTheme={() => setMode(m => m === 'light' ? 'dark' : 'light')}
+          handleLoginOpen={() => setAuthOpen(true)}
+        />
+        
         <Routes>
-          <Route path="/" element={<AssetMarketplace />} />
-          <Route path="/history" element={<TransactionHistory />} />
+          <Route path="/" element={<AssetMarketplace assets={mockAssets} />} />
+          <Route 
+            path="/history" 
+            element={<TransactionHistory transactions={mockTransactions} />} 
+          />
         </Routes>
+
+        <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
       </Router>
     </ThemeProvider>
   );
